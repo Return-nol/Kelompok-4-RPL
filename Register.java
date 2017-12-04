@@ -28,7 +28,7 @@ public class Register extends AppCompatActivity {
 
     ProgressDialog pDialog;
     Button btn_register, btn_login;
-    EditText txt_username, txt_password, txt_confirm_password;
+    EditText txt_username, txt_password, txt_confirm_password, txt_phone, txt_line;
     Intent intent;
 
     int success;
@@ -64,6 +64,8 @@ public class Register extends AppCompatActivity {
         txt_username = (EditText) findViewById(R.id.txt_username);
         txt_password = (EditText) findViewById(R.id.txt_password);
         txt_confirm_password = (EditText) findViewById(R.id.txt_confirm_password);
+        txt_phone = (EditText) findViewById(R.id.txt_phone);
+        txt_line = (EditText) findViewById(R.id.txt_line);
 
         btn_login.setOnClickListener(new View.OnClickListener() {
 
@@ -84,11 +86,13 @@ public class Register extends AppCompatActivity {
                 String username = txt_username.getText().toString();
                 String password = txt_password.getText().toString();
                 String confirm_password = txt_confirm_password.getText().toString();
+                String phone = txt_phone.getText().toString();
+                String line = txt_line.getText().toString();
 
                 if (conMgr.getActiveNetworkInfo() != null
                         && conMgr.getActiveNetworkInfo().isAvailable()
                         && conMgr.getActiveNetworkInfo().isConnected()) {
-                    checkRegister(username, password, confirm_password);
+                    checkRegister(username, password, confirm_password, phone, line);
                 } else {
                     Toast.makeText(getApplicationContext(), "No Internet Connection", Toast.LENGTH_SHORT).show();
                 }
@@ -97,7 +101,7 @@ public class Register extends AppCompatActivity {
 
     }
 
-    private void checkRegister(final String username, final String password, final String confirm_password) {
+    private void checkRegister(final String username, final String password, final String confirm_password, final String phone, final String line) {
         pDialog = new ProgressDialog(this);
         pDialog.setCancelable(false);
         pDialog.setMessage("Register ...");
@@ -125,6 +129,8 @@ public class Register extends AppCompatActivity {
                         txt_username.setText("");
                         txt_password.setText("");
                         txt_confirm_password.setText("");
+                        txt_phone.setText("");
+                        txt_line.setText("");
 
                     } else {
                         Toast.makeText(getApplicationContext(),
@@ -157,12 +163,16 @@ public class Register extends AppCompatActivity {
                 params.put("username", username);
                 params.put("password", password);
                 params.put("confirm_password", confirm_password);
+                params.put("phone", phone);
+                params.put("line", line);
+
 
                 return params;
             }
 
         };
-
+        // Disable the cache option before you add it to the queue.
+        strReq.setShouldCache(false);
         // Adding request to request queue
         AppController.getInstance().addToRequestQueue(strReq, tag_json_obj);
     }
