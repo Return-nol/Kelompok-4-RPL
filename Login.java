@@ -1,4 +1,5 @@
 package id.ac.ui.proyekezprint;
+
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -46,6 +47,8 @@ public class Login extends AppCompatActivity {
 
     public final static String TAG_USERNAME = "username";
     public final static String TAG_ID = "id";
+    public final static String TAG_phone = "phone";
+    public final static String TAG_line = "line";
 
     String tag_json_obj = "json_obj_req";
 
@@ -76,6 +79,7 @@ public class Login extends AppCompatActivity {
         txt_username = (EditText) findViewById(R.id.txt_username);
         txt_password = (EditText) findViewById(R.id.txt_password);
 
+
         // Cek session login jika TRUE maka langsung buka MainActivity
         sharedpreferences = getSharedPreferences(my_shared_preferences, Context.MODE_PRIVATE);
         session = sharedpreferences.getBoolean(session_status, false);
@@ -92,13 +96,11 @@ public class Login extends AppCompatActivity {
 
 
         btn_login.setOnClickListener(new View.OnClickListener() {
-
             @Override
             public void onClick(View v) {
                 // TODO Auto-generated method stub
-                String username = txt_username.getText().toString();
-                String password = txt_password.getText().toString();
-
+                final String username = txt_username.getText().toString();
+                final String password = txt_password.getText().toString();
                 // mengecek kolom yang kosong
                 if (username.trim().length() > 0 && password.trim().length() > 0) {
                     if (conMgr.getActiveNetworkInfo() != null
@@ -133,7 +135,8 @@ public class Login extends AppCompatActivity {
         pDialog.setCancelable(false);
         pDialog.setMessage("Logging in ...");
         showDialog();
-
+        txt_username.setText("");
+        txt_password.setText("");
         StringRequest strReq = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
 
             @Override
@@ -149,6 +152,8 @@ public class Login extends AppCompatActivity {
                     if (success == 1) {
                         String username = jObj.getString(TAG_USERNAME);
                         String id = jObj.getString(TAG_ID);
+                        String phone = jObj.getString(TAG_phone);
+                        String line = jObj.getString(TAG_line);
 
                         Log.e("Successfully Login!", jObj.toString());
 
@@ -165,6 +170,8 @@ public class Login extends AppCompatActivity {
                         Intent intent = new Intent(Login.this, MainActivity.class);
                         intent.putExtra(TAG_ID, id);
                         intent.putExtra(TAG_USERNAME, username);
+                        intent.putExtra(TAG_phone, phone);
+                        intent.putExtra(TAG_line, line);
                         finish();
                         startActivity(intent);
                     } else {
@@ -200,9 +207,11 @@ public class Login extends AppCompatActivity {
 
                 return params;
             }
-
         };
 
+
+        // Disable the cache option before you add it to the queue.
+        strReq.setShouldCache(false);
         // Adding request to request queue
         AppController.getInstance().addToRequestQueue(strReq, tag_json_obj);
     }
